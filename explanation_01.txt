@@ -1,0 +1,116 @@
+=========================================================
+DJANGO TEMPLATES AND STATIC FILES (Simple Notes)
+=========================================================
+
+1. Templates Folder
+-------------------
+- The templates folder stores all HTML files.
+- Django uses the render() function to display HTML pages.
+
+Example:
+
+from django.shortcuts import render
+
+def home(request):
+    return render(request, "index.html")
+
+
+---------------------------------------------------------
+
+2. HttpResponse
+---------------
+- HttpResponse is used to display plain text in the browser.
+
+Example:
+
+from django.http import HttpResponse
+
+def home(request):
+    return HttpResponse("Hello, Django!")
+
+
+---------------------------------------------------------
+
+3. Configure the Templates Folder
+---------------------------------
+In settings.py, tell Django where your HTML files are located.
+
+TEMPLATES = [
+    {
+        ...
+        "DIRS": [BASE_DIR / "templates"],
+        ...
+    },
+]
+
+
+---------------------------------------------------------
+
+4. Static Folder
+----------------
+The static folder stores:
+
+- CSS files
+- JavaScript files
+- Images
+- Fonts
+
+Example Folder Structure:
+
+static/
+│── styles.css
+│── script.js
+│── logo.png
+
+
+---------------------------------------------------------
+
+5. Use CSS in an HTML File
+--------------------------
+
+Step 1: Load the static template tag
+(Place it before <!DOCTYPE html>)
+
+{% load static %}
+
+
+Step 2: Link the CSS file
+
+<link rel="stylesheet" href="{% static 'styles.css' %}">
+
+
+---------------------------------------------------------
+
+6. Configure Static Files
+-------------------------
+In settings.py:
+
+import os
+
+STATIC_URL = "static/"
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
+
+---------------------------------------------------------
+
+7. Summary
+----------
+
+✔ templates/ folder → Stores HTML files.
+
+✔ static/ folder → Stores CSS, JavaScript, images, and fonts.
+
+✔ render() → Displays an HTML page.
+
+✔ HttpResponse() → Displays plain text.
+
+✔ Use {% load static %} before <!DOCTYPE html>.
+
+✔ Use {% static 'filename' %} to access files from the static folder.
+
+✔ Add STATICFILES_DIRS in settings.py so Django can find static files.
+
+=========================================================
