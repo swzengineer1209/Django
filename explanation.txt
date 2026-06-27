@@ -1,0 +1,28 @@
+template folder is for html files 
+static folders are for css and javascript files
+
+
+when create html file and to show them use render in views
+for text display use HTTPResponse
+
+for accessing html and css files define templates in settings.py file under templates array
+
+
+
+for css accessing
+template engine
+    {% load static %} // before doctype html
+
+    <link rel="stylesheet" href="{% static 'styles.css' %}"> // at linking css to html
+
+
+in settings.py
+import os 
+// and below STATIC_URL add this 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
+
+
+

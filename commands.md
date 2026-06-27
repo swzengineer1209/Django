@@ -1,4 +1,3 @@
-
 # Django + uv Setup Guide (Windows)
 
 > **Requirements**
