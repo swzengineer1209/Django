@@ -114,3 +114,442 @@ STATICFILES_DIRS = [
 ✔ Add STATICFILES_DIRS in settings.py so Django can find static files.
 
 =========================================================
+
+
+
+
+
+
+===========================================================================================================================================================================================================================================================
+
+
+
+
+
+
+================================================================================
+8. CREATING A DJANGO APP
+================================================================================
+
+A Django project can contain multiple applications (apps). Each app is
+responsible for a specific feature or functionality.
+
+--------------------------------------------------------------------------------
+STEP 1: CREATE A NEW APP
+--------------------------------------------------------------------------------
+
+Run the following command inside your Django project:
+
+python manage.py startapp app1
+
+This creates the following structure:
+
+app1/
+│── migrations/
+│── __init__.py
+│── admin.py
+│── apps.py
+│── models.py
+│── tests.py
+│── views.py
+
+--------------------------------------------------------------------------------
+STEP 2: REGISTER THE APP
+--------------------------------------------------------------------------------
+
+After creating an app, Django does NOT automatically recognize it.
+
+Open:
+
+project/settings.py
+
+Locate the INSTALLED_APPS list and add your app name.
+
+Example:
+
+INSTALLED_APPS = [
+    ...
+    'app1',
+]
+
+Important:
+Every newly created app must be added to INSTALLED_APPS.
+
+--------------------------------------------------------------------------------
+STEP 3: CREATE A TEMPLATES FOLDER
+--------------------------------------------------------------------------------
+
+Inside your app, create the following folder structure:
+
+app1/
+│── templates/
+│   └── app1/
+│       └── app1_all.html
+
+Using the app name as a folder helps prevent conflicts when multiple apps
+contain templates with the same filename.
+
+--------------------------------------------------------------------------------
+STEP 4: CREATE urls.py INSIDE THE APP
+--------------------------------------------------------------------------------
+
+Django does not create a urls.py file automatically for apps.
+
+Create:
+
+app1/
+│── urls.py
+
+Example:
+
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.app1_all, name='app1_all'),
+]
+
+--------------------------------------------------------------------------------
+STEP 5: CONNECT THE APP TO THE PROJECT
+--------------------------------------------------------------------------------
+
+Open:
+
+project/urls.py
+
+Import include:
+
+from django.urls import path, include
+
+Add the app URL:
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('app1/', include('app1.urls')),
+]
+
+Now every request beginning with:
+
+/app1/
+
+is automatically forwarded to:
+
+app1/urls.py
+
+================================================================================
+DJANGO REQUEST FLOW
+================================================================================
+
+Browser
+   │
+   ▼
+project/urls.py
+   │
+   ▼
+app1/urls.py
+   │
+   ▼
+views.py
+   │
+   ▼
+HTML Template
+   │
+   ▼
+Response
+   │
+   ▼
+Browser
+
+OR
+
+Request
+   │
+   ▼
+Project urls.py
+   │
+   ▼
+App urls.py
+   │
+   ▼
+View Function
+   │
+   ▼
+Template
+   │
+   ▼
+Response
+
+================================================================================
+9. USING TEMPLATES (TEMPLATE INHERITANCE)
+================================================================================
+
+Instead of writing the complete HTML structure for every page, Django allows
+you to create one base template and let all other templates inherit from it.
+
+This feature is called Template Inheritance.
+
+--------------------------------------------------------------------------------
+STEP 1: CREATE A BASE TEMPLATE
+--------------------------------------------------------------------------------
+
+Create:
+
+templates/
+│── layout.html
+
+Example:
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+        {% block title %}
+            Django Website
+        {% endblock %}
+    </title>
+</head>
+
+<body>
+
+    {% block content %}
+    {% endblock %}
+
+</body>
+</html>
+
+--------------------------------------------------------------------------------
+UNDERSTANDING BLOCKS
+--------------------------------------------------------------------------------
+
+A block is a placeholder whose content can be replaced by child templates.
+
+Example:
+
+{% block title %}
+    Django Website
+{% endblock %}
+
+If a child template overrides this block, the new content is displayed.
+
+If it does not override the block, Django displays the default content
+("Django Website").
+
+--------------------------------------------------------------------------------
+STEP 2: EXTEND THE BASE TEMPLATE
+--------------------------------------------------------------------------------
+
+To use layout.html in another template, write:
+
+{% extends 'layout.html' %}
+
+IMPORTANT:
+
+The extends tag MUST be the FIRST template tag in the file.
+
+Correct:
+
+{% extends 'layout.html' %}
+
+{% block title %}
+Home Page
+{% endblock %}
+
+Wrong:
+
+{% comment %}
+Old HTML
+{% endcomment %}
+
+{% extends 'layout.html' %}
+
+This will raise:
+
+TemplateSyntaxError
+
+because Django requires {% extends %} to be the first template tag.
+
+--------------------------------------------------------------------------------
+STEP 3: OVERRIDE BLOCKS
+--------------------------------------------------------------------------------
+
+Example:
+
+{% extends 'layout.html' %}
+
+{% block title %}
+Home Page
+{% endblock %}
+
+{% block content %}
+<h1>Welcome to Django</h1>
+<p>This is the App Home Page.</p>
+{% endblock %}
+
+Only the blocks you override are replaced.
+
+Everything else comes from layout.html.
+
+--------------------------------------------------------------------------------
+BLOCK BEHAVIOR
+--------------------------------------------------------------------------------
+
+Parent Template:
+
+{% block title %}
+Django Website
+{% endblock %}
+
+Child Template:
+
+{% block title %}
+Home Page
+{% endblock %}
+
+Final Output:
+
+Home Page
+
+--------------------------------------------------
+
+If the child template does not override the block:
+
+Parent:
+
+{% block title %}
+Django Website
+{% endblock %}
+
+Child:
+
+{% extends 'layout.html' %}
+
+Final Output:
+
+Django Website
+
+The parent's default value is displayed.
+
+--------------------------------------------------------------------------------
+TEMPLATE SEARCH ORDER
+--------------------------------------------------------------------------------
+
+When Django encounters:
+
+{% extends 'layout.html' %}
+
+it searches for layout.html in this order:
+
+1. Current App Templates Folder
+
+   app1/templates/
+
+2. Project Templates Folder
+
+   project/templates/
+
+If found, Django loads the template.
+
+Otherwise, it raises:
+
+TemplateDoesNotExist
+
+================================================================================
+TEMPLATE INHERITANCE FLOW
+================================================================================
+
+layout.html
+     │
+     ▼
+Contains common HTML structure
+(Head, Navbar, Footer, etc.)
+     │
+     ▼
+app1_all.html
+     │
+     ▼
+{% extends 'layout.html' %}
+     │
+     ▼
+Override Required Blocks
+     │
+     ▼
+Django Combines Both Templates
+     │
+     ▼
+Final HTML Generated
+     │
+     ▼
+Browser
+
+================================================================================
+IMPORTANT POINTS TO REMEMBER
+================================================================================
+
+✓ Create an app using:
+
+  python manage.py startapp app1
+
+✓ Register every app inside INSTALLED_APPS.
+
+✓ Create a separate urls.py for every app.
+
+✓ Connect the app using include() inside project/urls.py.
+
+✓ Store templates inside:
+
+  app_name/templates/app_name/
+
+✓ Create a reusable base template (layout.html).
+
+✓ Always place:
+
+  {% extends 'layout.html' %}
+
+  as the FIRST template tag in the child template.
+
+✓ Use {% block %} and {% endblock %} to define replaceable sections.
+
+✓ Child templates only override the blocks they need.
+
+✓ If a block is not overridden, Django uses the default content from the parent.
+
+✓ Request Flow:
+
+Browser
+   ↓
+Project urls.py
+   ↓
+App urls.py
+   ↓
+View Function
+   ↓
+Template
+   ↓
+Response
+   ↓
+Browser
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+===========================================================================================================================================================================================================================================================
+
+
+
+
+
+
+
+
+
